@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plant_diary/bloc/plants_bloc.dart';
 import 'package:plant_diary/bloc/plants_state.dart';
+import 'package:plant_diary/plant_item_tile.dart';
 
 void main() {
   runApp(MyApp());
@@ -86,8 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           )
                         : ListView(
                             children: state.plants
-                                .map((plantItem) => ListTile(
-                                      title: Text(plantItem.name),
+                                .map((element) => PlantItemTile(
+                                      plant: element,
+                                      buildContext: context,
                                     ))
                                 .toList(),
                           )),
@@ -98,18 +100,11 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
-            onPressed: () {
-              context.bloc<PlantsBloc>().removePlant();
-            },
-            tooltip: 'Remove',
-            mini: true,
-            backgroundColor: Colors.redAccent,
-            child: Icon(Icons.close),
-          ),
-          FloatingActionButton(
             isExtended: true,
             onPressed: () {
-              context.bloc<PlantsBloc>().addPlant();
+              context
+                  .bloc<PlantsBloc>()
+                  .addPlant(Plant('New Plant', 'New species'));
             },
             tooltip: 'Add',
             child: Icon(Icons.add),

@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:plant_diary/bloc/plants_event.dart';
 import 'package:plant_diary/bloc/plants_state.dart';
-
-enum PlantsEvent { load, add, remove }
 
 class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
   PlantsBloc() : super(PlantsState.empty());
@@ -20,39 +19,35 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
 
   @override
   Stream<PlantsState> mapEventToState(PlantsEvent event) async* {
-    switch (event) {
-      case PlantsEvent.load:
-        yield PlantsState.loading();
-        await Future.delayed(Duration(milliseconds: 300));
-        yield PlantsState.loaded(serverPlantList);
-        break;
-      case PlantsEvent.add:
-        final plants = state.plants.toList();
-        yield PlantsState.loading();
-        await Future.delayed(Duration(milliseconds: 300));
-        yield PlantsState.loaded(
-            plants..add(Plant('Plant ${plants.length + 1}')));
-        break;
-      case PlantsEvent.remove:
-        final plants = state.plants.toList();
-        yield PlantsState.loading();
-        await Future.delayed(Duration(milliseconds: 300));
-        yield plants.isEmpty
-            ? PlantsState.empty()
-            : PlantsState.loaded(plants..removeLast());
-        break;
+    if (event is LoadPlantsEvent) {
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield PlantsState.loaded(serverPlantList);
+    } else if (event is AddPlantEvent) {
+      final plants = state.plants.toList();
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield PlantsState.loaded(
+          plants..add(event.newPlant));
+    } else if (event is RemovePlantsEvent) {
+      final plants = state.plants.toList();
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield plants.isEmpty
+          ? PlantsState.empty()
+          : PlantsState.loaded(plants..remove(event.plant));
     }
   }
 
   void loadPlants() {
-    add((PlantsEvent.load));
+    add((LoadPlantsEvent(0)));
   }
 
-  void addPlant() {
-    add((PlantsEvent.add));
+  void addPlant(Plant plant) {
+    add((AddPlantEvent(0, plant)));
   }
 
-  void removePlant() {
-    add((PlantsEvent.remove));
+  void removePlant(Plant plant) {
+    add((RemovePlantsEvent(0, plant)));
   }
 }

@@ -1,12 +1,12 @@
 import 'dart:collection';
 
 final serverPlantList = UnmodifiableListView<Plant>([
-  Plant('plant 1'),
-  Plant('plant 2'),
-  Plant('plant 3'),
-  Plant('plant 4'),
-  Plant('plant 5'),
-  Plant('plant 6'),
+  Plant('plant 1', 'Type 1', lastTimeWatered: DateTime.now().subtract(Duration(days: 2))),
+  Plant('plant 2', 'Type 1'),
+  Plant('plant 3', 'Type 1'),
+  Plant('plant 4', 'Type 1'),
+  Plant('plant 5', 'Type 1'),
+  Plant('plant 6', 'Type 1'),
 ]);
 
 class PlantsState {
@@ -24,5 +24,7 @@ class PlantsState {
 
 class Plant {
   final String name;
-  const Plant(this.name);
+  final String species;
+  final DateTime lastTimeWatered;
+  const Plant(this.name, this.species, {this.lastTimeWatered});
 }
