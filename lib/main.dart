@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => PlantsBloc())],
       child: MaterialApp(
-        title: 'Plant Diary',
+        title: 'Plant Diary', // Change for Manuela
         theme: ThemeData(
           // This is the theme of your application.
           //
