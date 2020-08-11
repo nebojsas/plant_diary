@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:plant_diary/bloc/plants_bloc.dart';
 
 import 'bloc/plants_state.dart';
+import 'plant_details_page.dart';
 
 class PlantItemTile extends StatelessWidget {
   final Plant plant;
@@ -45,16 +44,25 @@ class PlantItemTile extends StatelessWidget {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              IconButton(
-                color: Colors.grey,
-                focusColor: Colors.redAccent,
-                icon: Icon(
-                  Icons.delete,
-                ),
-                onPressed: () {
-                  buildContext.bloc<PlantsBloc>().removePlant(plant);
-                },
-              ),
+              plant.needsWater()
+                  ? Icon(
+                      Icons.mood_bad,
+                      color: Colors.red,
+                    )
+                  : Icon(
+                      Icons.mood,
+                      color: Colors.green,
+                    ),
+              // IconButton(
+              //   color: Colors.grey,
+              //   focusColor: Colors.redAccent,
+              //   icon: Icon(
+              //     Icons.delete,
+              //   ),
+              //   onPressed: () {
+              //     buildContext.bloc<PlantsBloc>().removePlant(plant);
+              //   },
+              // ),
             ],
           ),
           onTap: () {
@@ -66,61 +74,6 @@ class PlantItemTile extends StatelessWidget {
                         )));
           },
         ),
-      ),
-    );
-  }
-}
-
-class PlantDetailsPage extends StatefulWidget {
-  final Plant plant;
-
-  const PlantDetailsPage({
-    Key key,
-    this.plant,
-  }) : super(key: key);
-
-  @override
-  _PlantDetailsPageState createState() => _PlantDetailsPageState();
-}
-
-class _PlantDetailsPageState extends State<PlantDetailsPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   // Here we take the value from the MyHomePage object that was created by
-      //   // the App.build method, and use it to set our appbar title.
-      //   title: Text(widget.plant.name),
-      // ),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 300.0,
-            pinned: true,
-            floating: true,
-            snap: true,
-            flexibleSpace: FlexibleSpaceBar(
-                title: Text(widget.plant.name,
-                    style: TextStyle(
-                      color: Colors.white,
-                    )),
-                background: widget.plant.imageUrl != null
-                    ? Image.network(
-                        widget.plant.imageUrl,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        'assets/default_plant.png',
-                        fit: BoxFit.contain,
-                      )),
-          ),
-          SliverFillRemaining(
-            child: Center(
-              child: Text(
-                  '${widget.plant.name} is a type of ${widget.plant.species}'),
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -100,6 +100,18 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           FloatingActionButton(
+            heroTag: null,
+            mini: true,
+            isExtended: true,
+            onPressed: () {
+              context
+                  .bloc<PlantsBloc>()
+                  .waterAllPlants();
+            },
+            tooltip: 'Water All Plants',
+            child: Icon(Icons.format_color_fill),
+          ),
+          FloatingActionButton(
             isExtended: true,
             onPressed: () {
               context

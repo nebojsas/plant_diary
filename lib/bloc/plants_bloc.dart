@@ -27,8 +27,7 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
       final plants = state.plants.toList();
       yield PlantsState.loading();
       await Future.delayed(Duration(milliseconds: 300));
-      yield PlantsState.loaded(
-          plants..add(event.newPlant));
+      yield PlantsState.loaded(plants..add(event.newPlant));
     } else if (event is RemovePlantsEvent) {
       final plants = state.plants.toList();
       yield PlantsState.loading();
@@ -36,6 +35,35 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
       yield plants.isEmpty
           ? PlantsState.empty()
           : PlantsState.loaded(plants..remove(event.plant));
+    } else if (event is ReplacePlantsEvent) {
+      final plants = state.plants.toList();
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield plants.isEmpty
+          ? PlantsState.empty()
+          : PlantsState.loaded(plants
+            ..remove(event.plant)
+            ..add(event.newPlant));
+    } else if (event is WaterPlantEvent) {
+      final plants = state.plants.toList();
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield plants.isEmpty
+          ? PlantsState.empty()
+          : PlantsState.loaded(plants
+            ..where((e) => e == event.plant).forEach((element) {
+              element.lastTimeWatered = DateTime.now();
+            }));
+    } else if (event is WaterAllPlantsEvent) {
+      final plants = state.plants.toList();
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield plants.isEmpty
+          ? PlantsState.empty()
+          : PlantsState.loaded(plants
+            ..forEach((element) {
+              element.lastTimeWatered = DateTime.now();
+            }));
     }
   }
 
@@ -49,5 +77,17 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
 
   void removePlant(Plant plant) {
     add((RemovePlantsEvent(0, plant)));
+  }
+
+  void replacePlant(Plant plant, Plant newPlant) {
+    add((ReplacePlantsEvent(0, plant, newPlant)));
+  }
+
+  void waterPlant(Plant plant) {
+    add((WaterPlantEvent(0, plant)));
+  }
+
+  void waterAllPlants() {
+    add((WaterAllPlantsEvent(0)));
   }
 }
