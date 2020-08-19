@@ -76,23 +76,29 @@ class _MyHomePageState extends State<MyHomePage> {
         // in the middle of the parent.
         child: BlocConsumer<PlantsBloc, PlantsState>(
             builder: (context, state) => Center(
-                child: state.isLoading
-                    ? CircularProgressIndicator()
-                    : state.isEmpty()
-                        ? FlatButton(
-                            onPressed: () {
-                              context.bloc<PlantsBloc>().loadPlants();
-                            },
-                            child: Text('Load Plants'),
-                          )
-                        : ListView(
-                            children: state.plants
-                                .map((element) => PlantItemTile(
-                                      plant: element,
-                                      buildContext: context,
-                                    ))
-                                .toList(),
-                          )),
+                  child: state.isLoading
+                      ? CircularProgressIndicator()
+                      : state.isEmpty()
+                          ? FlatButton(
+                              onPressed: () {
+                                context.bloc<PlantsBloc>().loadPlants();
+                              },
+                              child: Text('Load Plants'),
+                            )
+                          : RefreshIndicator(
+                              onRefresh: () async {
+                                context.bloc<PlantsBloc>().loadPlants();
+                                return await Future.delayed(Duration(seconds: 3));
+                              },
+                              child: ListView(
+                                children: state.plants
+                                    .map((element) => PlantItemTile(
+                                          plant: element,
+                                          buildContext: context,
+                                        ))
+                                    .toList(),
+                              )),
+                ),
             listener: (context, state) => {}),
       ),
       floatingActionButton: Column(
@@ -104,9 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
             mini: true,
             isExtended: true,
             onPressed: () {
-              context
-                  .bloc<PlantsBloc>()
-                  .waterAllPlants();
+              context.bloc<PlantsBloc>().waterAllPlants();
             },
             tooltip: 'Water All Plants',
             child: Icon(Icons.format_color_fill),
