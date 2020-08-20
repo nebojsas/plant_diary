@@ -29,22 +29,29 @@ class PlantItemTile extends StatelessWidget {
                           plant.imageUrl,
                           width: 48,
                           height: 48,
-                          fit: BoxFit.fitWidth,
+                          fit: BoxFit.cover,
                         )
-                      : Image.asset(
-                          'assets/default_plant.png',
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.fitWidth,
-                        )),
+                      : plant.species.defaultImage != null
+                          ? Image.network(
+                              plant.species.defaultImage,
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.asset(
+                              'assets/default_plant.png',
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                            )),
             ],
           ),
           title: Text(plant.name),
-          subtitle: Text(plant.species),
+          subtitle: Text(plant.species.name),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              plant.needsWater()
+              plant.isHappy()
                   ? Icon(
                       Icons.mood_bad,
                       color: Colors.red,

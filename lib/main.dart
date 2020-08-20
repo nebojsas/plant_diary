@@ -74,32 +74,32 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: BlocConsumer<PlantsBloc, PlantsState>(
-            builder: (context, state) => Center(
-                  child: state.isLoading
-                      ? CircularProgressIndicator()
-                      : state.isEmpty()
-                          ? FlatButton(
-                              onPressed: () {
-                                context.bloc<PlantsBloc>().loadPlants();
-                              },
-                              child: Text('Load Plants'),
-                            )
-                          : RefreshIndicator(
-                              onRefresh: () async {
-                                context.bloc<PlantsBloc>().loadPlants();
-                                return await Future.delayed(Duration(seconds: 3));
-                              },
-                              child: ListView(
-                                children: state.plants
-                                    .map((element) => PlantItemTile(
-                                          plant: element,
-                                          buildContext: context,
-                                        ))
-                                    .toList(),
-                              )),
-                ),
-            listener: (context, state) => {}),
+        child: BlocBuilder<PlantsBloc, PlantsState>(
+          builder: (context, state) => Center(
+            child: state.isLoading
+                ? CircularProgressIndicator()
+                : state.isEmpty()
+                    ? FlatButton(
+                        onPressed: () {
+                          context.bloc<PlantsBloc>().loadPlants();
+                        },
+                        child: Text('Load Plants'),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () async {
+                          context.bloc<PlantsBloc>().loadPlants();
+                          return await Future.delayed(Duration(seconds: 3));
+                        },
+                        child: ListView(
+                          children: state.plants
+                              .map((element) => PlantItemTile(
+                                    plant: element,
+                                    buildContext: context,
+                                  ))
+                              .toList(),
+                        )),
+          ),
+        ),
       ),
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.max,
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
             onPressed: () {
               context
                   .bloc<PlantsBloc>()
-                  .addPlant(Plant('New Plant', 'New species'));
+                  .addPlant(Plant('New Plant', FITTONIA));
             },
             tooltip: 'Add',
             child: Icon(Icons.add),

@@ -33,12 +33,12 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
             actions: [
               BlocConsumer<PlantsBloc, PlantsState>(
                 builder: (context, state) => IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      context.bloc<PlantsBloc>().removePlant(widget.plant);
-                      Navigator.pop(context);
-                    },
-                  ),
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    context.bloc<PlantsBloc>().removePlant(widget.plant);
+                    Navigator.pop(context);
+                  },
+                ),
                 listener: (context, state) => {},
               ),
             ],
@@ -56,14 +56,20 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                         widget.plant.imageUrl,
                         fit: BoxFit.cover,
                       )
-                    : Image.asset(
-                        'assets/default_plant.png',
-                        fit: BoxFit.contain,
-                      )),
+                    : widget.plant.species.defaultImage != null
+                        ? Image.network(
+                            widget.plant.species.defaultImage,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            'assets/default_plant.png',
+                            fit: BoxFit.contain,
+                          )),
           ),
           SliverFillRemaining(
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 100.0, horizontal: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 100.0, horizontal: 16.0),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +80,7 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: widget.plant.needsWater()
+                          child: widget.plant.isHappy()
                               ? Icon(
                                   Icons.mood_bad,
                                   color: Colors.red,
@@ -87,7 +93,7 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                         Flexible(
                           child: Container(
                             padding: const EdgeInsets.all(8.0),
-                            child: Text(widget.plant.needsWater()
+                            child: Text(widget.plant.needsWatering()
                                 ? '${widget.plant.name} needs water.\nIt was last time wattered ${widget.plant.lastTimeWatered?.difference(DateTime.now())?.abs()?.inDays ?? UNKNOWN} day(s) ago.'
                                 : '${widget.plant.name} is happy.\nIt was last time wattered ${widget.plant.lastTimeWatered?.difference(DateTime.now())?.abs()?.inDays ?? UNKNOWN} day(s) ago.'),
                           ),
@@ -95,7 +101,7 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                       ],
                     ),
                     Text(
-                        '${widget.plant.name} is a type of ${widget.plant.species}'),
+                        '${widget.plant.name} is a type of ${widget.plant.species.name}'),
                   ]),
             ),
           ),
@@ -103,7 +109,7 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
       ),
       floatingActionButton: BlocConsumer<PlantsBloc, PlantsState>(
         builder: (context, state) => Visibility(
-          visible: widget.plant.needsWater(),
+          visible: widget.plant.needsWatering(),
           child: FloatingActionButton(
             heroTag: widget.plant,
             isExtended: true,
