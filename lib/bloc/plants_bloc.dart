@@ -54,6 +54,26 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
             ..where((e) => e == event.plant).forEach((element) {
               element.lastTimeWatered = DateTime.now();
             }));
+    } else if (event is FeedPlantEvent) {
+      final plants = state.plants.toList();
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield plants.isEmpty
+          ? PlantsState.empty()
+          : PlantsState.loaded(plants
+            ..where((e) => e == event.plant).forEach((element) {
+              element.lastTimeFed = DateTime.now();
+            }));
+    } else if (event is RePotPlantEvent) {
+      final plants = state.plants.toList();
+      yield PlantsState.loading();
+      await Future.delayed(Duration(milliseconds: 300));
+      yield plants.isEmpty
+          ? PlantsState.empty()
+          : PlantsState.loaded(plants
+            ..where((e) => e == event.plant).forEach((element) {
+              element.lastTimeRePotted = DateTime.now();
+            }));
     } else if (event is WaterAllPlantsEvent) {
       final plants = state.plants.toList();
       yield PlantsState.loading();
@@ -85,6 +105,14 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
 
   void waterPlant(Plant plant) {
     add((WaterPlantEvent(0, plant)));
+  }
+
+  void feedPlant(Plant plant) {
+    add((FeedPlantEvent(0, plant)));
+  }
+
+  void rePotPlant(Plant plant) {
+    add((RePotPlantEvent(0, plant)));
   }
 
   void waterAllPlants() {

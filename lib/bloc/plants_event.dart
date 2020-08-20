@@ -34,6 +34,18 @@ class WaterPlantEvent extends PlantsEvent {
   WaterPlantEvent(this.userId, this.plant);
 }
 
+class FeedPlantEvent extends PlantsEvent {
+  final int userId;
+  final Plant plant;
+  FeedPlantEvent(this.userId, this.plant);
+}
+
+class RePotPlantEvent extends PlantsEvent {
+  final int userId;
+  final Plant plant;
+  RePotPlantEvent(this.userId, this.plant);
+}
+
 class WaterAllPlantsEvent extends PlantsEvent {
   final int userId;
   WaterAllPlantsEvent(this.userId);

@@ -53,12 +53,12 @@ class PlantItemTile extends StatelessWidget {
             children: [
               plant.isHappy()
                   ? Icon(
-                      Icons.mood_bad,
-                      color: Colors.red,
-                    )
-                  : Icon(
                       Icons.mood,
                       color: Colors.green,
+                    )
+                  : Icon(
+                      Icons.mood_bad,
+                      color: Colors.red,
                     ),
               // IconButton(
               //   color: Colors.grey,

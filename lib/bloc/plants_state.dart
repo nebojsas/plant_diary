@@ -4,7 +4,7 @@ final serverPlantList = UnmodifiableListView<Plant>([
   Plant('plant 1', PARSLEY,
       lastTimeWatered: DateTime.now().subtract(Duration(days: 5))),
   Plant('plant 2', BASIL,
-      lastTimeWatered: DateTime.now().subtract(Duration(days: 1))),
+      lastTimeWatered: DateTime.now().subtract(Duration(days: 6))),
   Plant(
     'plant 3',
     FITTONIA,
@@ -12,7 +12,7 @@ final serverPlantList = UnmodifiableListView<Plant>([
   Plant('plant 4', PHILODENDRON,
       imageUrl:
           'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/corner-of-a-stylish-living-room-royalty-free-image-638859268-1553272443.jpg?crop=0.947xw:0.949xh;0.0527xw,0.0511xh&resize=980:*',
-      lastTimeWatered: DateTime.now().subtract(Duration(days: 1))),
+      lastTimeWatered: DateTime.now().subtract(Duration(days: 8))),
   Plant('plant 5', MONKEY_LEAF,
       imageUrl:
           'https://hips.hearstapps.com/hbu.h-cdn.co/assets/17/27/1499286008-chinese-money-plant.jpg?crop=1.0xw:1xh;center,top&resize=980:*',
@@ -54,14 +54,14 @@ class Plant {
       ? true
       : DateTime.now().difference(lastTimeWatered) > species.wateringFrequency;
 
+  bool needsFeeding() => lastTimeFed == null
+      ? true
+      : DateTime.now().difference(lastTimeFed) > species.feedingFrequency;
+
   bool needsRePotting() => lastTimeRePotted == null
       ? true
       : DateTime.now().difference(lastTimeRePotted) >
           species.rePottingFrequency;
-
-  bool needsFeeding() => lastTimeFed == null
-      ? true
-      : DateTime.now().difference(lastTimeFed) > species.feedingFrequency;
 
   bool isHappy() => !needsWatering() && !needsFeeding() && !needsRePotting();
 }
