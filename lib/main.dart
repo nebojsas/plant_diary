@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plant_diary/bloc/plants_bloc.dart';
@@ -12,6 +13,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    initializeFirebaseDefault();
+
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => PlantsBloc())],
       child: MaterialApp(
@@ -35,6 +38,18 @@ class MyApp extends StatelessWidget {
         home: MyHomePage(title: 'Plant Diary Home Page'),
       ),
     );
+  }
+
+  Future<void> initializeFirebaseDefault() async {
+    // final FirebaseOptions firebaseOptions = const FirebaseOptions(
+    //   appId: '1:448618578101:ios:0b650370bb29e29cac3efc',
+    //   apiKey: 'AIzaSyAgUhHU8wSJgO5MVNy95tMT07NEjzMOfz0',
+    //   projectId: 'react-native-firebase-testing',
+    //   messagingSenderId: '448618578101',
+    // );
+    FirebaseApp app = await Firebase.initializeApp();
+    assert(app != null);
+    print('Initialized default app $app');
   }
 }
 
@@ -65,68 +80,98 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: BlocBuilder<PlantsBloc, PlantsState>(
-          builder: (context, state) => Center(
-            child: state.isLoading
-                ? CircularProgressIndicator()
-                : state.isEmpty()
-                    ? FlatButton(
-                        onPressed: () {
-                          context.bloc<PlantsBloc>().loadPlants();
-                        },
-                        child: Text('Load Plants'),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: () async {
-                          context.bloc<PlantsBloc>().loadPlants();
-                          return await Future.delayed(Duration(seconds: 3));
-                        },
-                        child: ListView(
-                          children: state.plants
-                              .map((element) => PlantItemTile(
-                                    plant: element,
-                                    buildContext: context,
-                                  ))
-                              .toList(),
-                        )),
-          ),
+    return BlocBuilder<PlantsBloc, PlantsState>(builder: (context, state) {
+      if (state is PlantsStateInit) {
+        context.bloc<PlantsBloc>().loadPlants();
+      }
+
+      return Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
         ),
-      ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: null,
-            mini: true,
-            isExtended: true,
-            onPressed: () {
-              context.bloc<PlantsBloc>().waterAllPlants();
-            },
-            tooltip: 'Water All Plants',
-            child: Icon(Icons.format_color_fill),
-          ),
-          FloatingActionButton(
-            isExtended: true,
-            onPressed: () {
-              context
-                  .bloc<PlantsBloc>()
-                  .addPlant(Plant('New Plant', FITTONIA));
-            },
-            tooltip: 'Add',
-            child: Icon(Icons.add),
-          ),
-        ],
-      ),
-    );
+        body: Center(
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: state is PlantsStateLoading
+              ? CircularProgressIndicator()
+              : (state is PlantsStateLoaded)
+                  ? StreamBuilder(
+                      stream: context.bloc<PlantsBloc>().plantListStream,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Plant>> snapshot) {
+                        if (snapshot.hasData) {
+                          final plants = snapshot.data;
+                          return plants.isEmpty
+                              ? Text('You have no plants :(')
+                              : RefreshIndicator(
+                                  onRefresh: () async {
+                                    context.bloc<PlantsBloc>().loadPlants();
+                                    return await Future.delayed(
+                                        Duration(seconds: 3));
+                                  },
+                                  child: ListView(
+                                    children: plants
+                                        .map((element) => PlantItemTile(
+                                              plant: element,
+                                              buildContext: context,
+                                            ))
+                                        .toList(),
+                                  ));
+                        } else {
+                          return Text('You have no plants :(');
+                        }
+                      },
+                    )
+                  : Text('Error: Unknown state.'),
+        ),
+        floatingActionButton: state is PlantsStateLoaded
+            ? Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // FloatingActionButton(
+                  //   heroTag: null,
+                  //   mini: true,
+                  //   isExtended: true,
+                  //   onPressed: () {
+                  //     context.bloc<PlantsBloc>().waterAllPlants();
+                  //   },
+                  //   tooltip: 'Water All Plants',
+                  //   child: Icon(Icons.format_color_fill),
+                  // ),
+                  FloatingActionButton(
+                    isExtended: true,
+                    onPressed: () {
+                      context.bloc<PlantsBloc>().addPlant(
+                        null// Plant()
+                      );
+                        
+
+                      
+                      // if (state.plants.isEmpty) {
+                      //   context
+                      //       .bloc<PlantsBloc>()
+                      //       .addPlant(Plant('', 'New Plant', FITTONIA));
+                      // } else {
+                      //   context.bloc<PlantsBloc>().addPlant(Plant(
+                      //       state.plants
+                      //               .reduce((value, element) =>
+                      //                   value.id > element.id ? value : element)
+                      //               .id +
+                      //           1,
+                      //       'New Plant',
+                      //       FITTONIA));
+                      // }
+                    },
+                    tooltip: 'Add',
+                    child: Icon(Icons.add),
+                  ),
+                ],
+              )
+            : null,
+      );
+    });
   }
 }

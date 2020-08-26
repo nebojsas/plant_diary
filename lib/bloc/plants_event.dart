@@ -15,6 +15,12 @@ class AddPlantEvent extends PlantsEvent {
   AddPlantEvent(this.userId, this.newPlant);
 }
 
+class AddSpeciesEvent extends PlantsEvent {
+  final int userId;
+  final PlantSpecies species;
+  AddSpeciesEvent(this.userId, this.species);
+}
+
 class RemovePlantsEvent extends PlantsEvent {
   final int userId;
   final Plant plant;

@@ -60,16 +60,6 @@ class PlantItemTile extends StatelessWidget {
                       Icons.mood_bad,
                       color: Colors.red,
                     ),
-              // IconButton(
-              //   color: Colors.grey,
-              //   focusColor: Colors.redAccent,
-              //   icon: Icon(
-              //     Icons.delete,
-              //   ),
-              //   onPressed: () {
-              //     buildContext.bloc<PlantsBloc>().removePlant(plant);
-              //   },
-              // ),
             ],
           ),
           onTap: () {
@@ -77,7 +67,7 @@ class PlantItemTile extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext context) => PlantDetailsPage(
-                          plant: plant,
+                          plantId: plant.id,
                         )));
           },
         ),

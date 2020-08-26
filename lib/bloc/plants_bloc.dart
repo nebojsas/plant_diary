@@ -1,9 +1,15 @@
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:plant_diary/bloc/plants_event.dart';
 import 'package:plant_diary/bloc/plants_state.dart';
+import 'package:plant_diary/repository/plants_repo.dart';
 
 class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
-  PlantsBloc() : super(PlantsState.empty());
+  PlantsRepo _plantsRepo = PlantsRepo();
+  Stream<List<Plant>> plantListStream;
+  Map<String, PlantSpecies> _plantSpeciesMap;
+  PlantsBloc() : super(PlantsStateInit());
 
   @override
   Future<void> onChange(Change<PlantsState> change) async {
@@ -20,74 +26,73 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
   @override
   Stream<PlantsState> mapEventToState(PlantsEvent event) async* {
     if (event is LoadPlantsEvent) {
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield PlantsState.loaded(serverPlantList);
+      yield PlantsStateLoading();
+      _plantSpeciesMap = await _plantsRepo.plantSpeciesMap();
+      plantListStream = _plantsRepo.plantListStream(_plantSpeciesMap)
+        ..forEach((plantList) {
+          print('Loaded ${plantList.length} plants.');
+        });
+      yield PlantsStateLoaded();
     } else if (event is AddPlantEvent) {
-      final plants = state.plants.toList();
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield PlantsState.loaded(plants..add(event.newPlant));
-    } else if (event is RemovePlantsEvent) {
-      final plants = state.plants.toList();
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield plants.isEmpty
-          ? PlantsState.empty()
-          : PlantsState.loaded(plants..remove(event.plant));
-    } else if (event is ReplacePlantsEvent) {
-      final plants = state.plants.toList();
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield plants.isEmpty
-          ? PlantsState.empty()
-          : PlantsState.loaded(plants
-            ..remove(event.plant)
-            ..add(event.newPlant));
+      Map<String, PlantSpecies> plantSpeciesMap =
+          await _plantsRepo.plantSpeciesMap();
+      plantSpeciesMap.forEach((key, value) async {
+        bool success = await _plantsRepo.postPlant(
+          Plant(
+            '',
+            'My ${value.name}',
+            value,
+            imageUrl:
+                'https://hips.hearstapps.com/hbu.h-cdn.co/assets/17/27/1499286008-chinese-money-plant.jpg?crop=1.0xw:1xh;center,top&resize=980:*',
+            lastTimeWatered:
+                DateTime.now().subtract(Duration(days: Random().nextInt(10))),
+            lastTimeFed:
+                DateTime.now().subtract(Duration(days: Random().nextInt(100))),
+            lastTimeRePotted:
+                DateTime.now().subtract(Duration(days: Random().nextInt(1000))),
+          ),
+        );
+        print('Plant addition ${success ? 'succeeded' : 'failed'}');
+      });
+    } else if (event is AddSpeciesEvent) {
+      bool success = await _plantsRepo.postSpecies(event.species);
+      print('Plant species addition ${success ? 'succeeded' : 'failed'}');
+      // } else if (event is RemovePlantsEvent) {
+      //   final plants = (state as PlantsStateLoaded)?.plants?.toList() ?? [];
+      //   yield PlantsStateLoading();
+      //   yield PlantsStateLoaded(plants.isEmpty ? [] : plants
+      //     ..remove(event.plant));
+      // } else if (event is ReplacePlantsEvent) {
+      //   final plants = (state as PlantsStateLoaded)?.plants?.toList() ?? [];
+      //   yield PlantsStateLoading();
+      //   yield PlantsStateLoaded(plants.isEmpty ? [] : plants
+      //     ..remove(event.plant)
+      //     ..add(event.newPlant));
     } else if (event is WaterPlantEvent) {
-      final plants = state.plants.toList();
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield plants.isEmpty
-          ? PlantsState.empty()
-          : PlantsState.loaded(plants
-            ..where((e) => e == event.plant).forEach((element) {
-              element.lastTimeWatered = DateTime.now();
-            }));
-    } else if (event is FeedPlantEvent) {
-      final plants = state.plants.toList();
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield plants.isEmpty
-          ? PlantsState.empty()
-          : PlantsState.loaded(plants
-            ..where((e) => e == event.plant).forEach((element) {
-              element.lastTimeFed = DateTime.now();
-            }));
-    } else if (event is RePotPlantEvent) {
-      final plants = state.plants.toList();
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield plants.isEmpty
-          ? PlantsState.empty()
-          : PlantsState.loaded(plants
-            ..where((e) => e == event.plant).forEach((element) {
-              element.lastTimeRePotted = DateTime.now();
-            }));
-    } else if (event is WaterAllPlantsEvent) {
-      final plants = state.plants.toList();
-      yield PlantsState.loading();
-      await Future.delayed(Duration(milliseconds: 300));
-      yield plants.isEmpty
-          ? PlantsState.empty()
-          : PlantsState.loaded(plants
-            ..forEach((element) {
-              element.lastTimeWatered = DateTime.now();
-            }));
+      _plantsRepo.updatePlant(
+          Map<String, dynamic>.of({'lastTimeWatered': DateTime.now()}),
+          event.plant.id);
+      } else if (event is FeedPlantEvent) {
+        _plantsRepo.updatePlant(
+          Map<String, dynamic>.of({'lastTimeFed': DateTime.now()}),
+          event.plant.id);
+      } else if (event is RePotPlantEvent) {
+        _plantsRepo.updatePlant(
+          Map<String, dynamic>.of({'lastTimeRePotted': DateTime.now()}),
+          event.plant.id);
+      // } else if (event is WaterAllPlantsEvent) {
+      //   final plants = (state as PlantsStateLoaded)?.plants?.toList() ?? [];
+      //   yield PlantsStateLoading();
+      //   await Future.delayed(Duration(milliseconds: 300));
+      //   yield PlantsStateLoading();
+      //   yield PlantsStateLoaded(plants
+      //     ..forEach((element) {
+      //       element.lastTimeWatered = DateTime.now();
+      //     }));
     }
   }
 
-  void loadPlants() {
+  void loadPlants() async {
     add((LoadPlantsEvent(0)));
   }
 
@@ -118,4 +123,11 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
   void waterAllPlants() {
     add((WaterAllPlantsEvent(0)));
   }
+
+  void addPlantSpecies() {
+    add(AddSpeciesEvent(0, PlantSpecies.PHILODENDRON));
+  }
+
+  Stream<Plant> plantStream(String plantId) =>
+      _plantsRepo.plantStream(plantId, _plantSpeciesMap);
 }
