@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:plant_diary/bloc/plants_bloc.dart';
 import 'package:plant_diary/bloc/plants_state.dart';
+import 'package:plant_diary/create_plant_widget.dart';
 import 'package:plant_diary/plant_item_tile.dart';
 
 void main() {
   runApp(MyApp());
+}
+
+class PDColors {
+  static const PRIMARY = Color(0xff2e7d32);
 }
 
 class MyApp extends StatelessWidget {
@@ -30,6 +35,16 @@ class MyApp extends StatelessWidget {
           // Notice that the counter didn't reset back to zero; the application
           // is not restarted.
           primarySwatch: Colors.green,
+          primaryColor: PDColors.PRIMARY,
+          primaryColorDark: Color(0xff005005),
+          primaryColorLight: Color(0xff60ad5e),
+//           <!--?xml version="1.0" encoding="UTF-8"?-->
+// <resources>
+//   <color name="primaryColor"></color>
+//   <color name="primaryLightColor">#</color>
+//   <color name="primaryDarkColor">#</color>
+//   <color name="primaryTextColor">#ffffff</color>
+// </resources>
           // This makes the visual density adapt to the platform that you run
           // the app on. For desktop platforms, the controls will be smaller and
           // closer together (more dense) than on mobile platforms.
@@ -80,9 +95,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return BlocBuilder<PlantsBloc, PlantsState>(builder: (context, state) {
+    return BlocBuilder<PlantsBloc, PlantsState>(builder: (blocContext, state) {
       if (state is PlantsStateInit) {
-        context.bloc<PlantsBloc>().loadPlants();
+        blocContext.bloc<PlantsBloc>().loadPlants();
       }
 
       return Scaffold(
@@ -141,37 +156,51 @@ class _MyHomePageState extends State<MyHomePage> {
                   //   tooltip: 'Water All Plants',
                   //   child: Icon(Icons.format_color_fill),
                   // ),
-                  FloatingActionButton(
-                    isExtended: true,
-                    onPressed: () {
-                      context.bloc<PlantsBloc>().addPlant(
-                        null// Plant()
-                      );
-                        
-
-                      
-                      // if (state.plants.isEmpty) {
-                      //   context
-                      //       .bloc<PlantsBloc>()
-                      //       .addPlant(Plant('', 'New Plant', FITTONIA));
-                      // } else {
-                      //   context.bloc<PlantsBloc>().addPlant(Plant(
-                      //       state.plants
-                      //               .reduce((value, element) =>
-                      //                   value.id > element.id ? value : element)
-                      //               .id +
-                      //           1,
-                      //       'New Plant',
-                      //       FITTONIA));
-                      // }
-                    },
-                    tooltip: 'Add',
-                    child: Icon(Icons.add),
-                  ),
+                  CreatePlantFloatingActionButton(),
                 ],
               )
             : null,
       );
     });
+  }
+}
+
+class CreatePlantFloatingActionButton extends StatelessWidget {
+  const CreatePlantFloatingActionButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+      isExtended: true,
+      onPressed: () {
+        Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => CreatePlantWidget()));
+        // showBottomSheet(
+        //     context: context, builder: (context) => CreatePlantWidget());
+        // context.bloc<PlantsBloc>().addPlant(null // Plant()
+        //     );
+
+        // if (state.plants.isEmpty) {
+        //   context
+        //       .bloc<PlantsBloc>()
+        //       .addPlant(Plant('', 'New Plant', FITTONIA));
+        // } else {
+        //   context.bloc<PlantsBloc>().addPlant(Plant(
+        //       state.plants
+        //               .reduce((value, element) =>
+        //                   value.id > element.id ? value : element)
+        //               .id +
+        //           1,
+        //       'New Plant',
+        //       FITTONIA));
+        // }
+      },
+      tooltip: 'Add',
+      child: Icon(Icons.add),
+    );
   }
 }

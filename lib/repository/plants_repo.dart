@@ -39,6 +39,16 @@ class PlantsRepo {
     });
   }
 
+  Stream<List<PlantSpecies>> plantSpeciesStream() {
+    Firebase.initializeApp();
+    return FirebaseFirestore.instance
+        .collection('/species')
+        .snapshots()
+        .map((collection) => collection.docs.map((speciesDoc) {
+              return PlantSpecies.fromData(speciesDoc.data(), speciesDoc.id);
+            }).toList());
+  }
+
   Future<PlantSpecies> plantSpecies(String pathReference) async {
     await Firebase.initializeApp();
     return FirebaseFirestore.instance.doc(pathReference).get().then((doc) {
@@ -87,5 +97,12 @@ class PlantsRepo {
         .collection(USER_PLANTS_PATH)
         .add(newPlant.toMap()..putIfAbsent('species', () => species.reference))
         .then((docRef) => docRef != null);
+  }
+
+
+  Future<void> deletePlant(Plant plant) async {
+    await Firebase.initializeApp();
+    return FirebaseFirestore.instance
+        .collection(USER_PLANTS_PATH).doc(plant.id).delete();
   }
 }

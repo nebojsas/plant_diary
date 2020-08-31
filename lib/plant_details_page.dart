@@ -71,9 +71,9 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                                       begin: Alignment.topCenter,
                                       end: Alignment.bottomCenter,
                                       colors: [
-                                    Colors.black26,
+                                    Colors.black38,
                                     Colors.transparent,
-                                    Colors.black26
+                                    Colors.black38
                                   ],
                                       stops: [
                                     0.1,
@@ -132,11 +132,13 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                                       padding: const EdgeInsets.all(8.0),
                                       child:
                                           BlocBuilder<PlantsBloc, PlantsState>(
-                                        builder: (context, state) => IconButton(
-                                          icon: Icon(MdiIcons.waterPump),
-                                          color: !plant.needsWatering()
-                                              ? Colors.green
-                                              : Colors.red,
+                                        builder: (context, state) =>
+                                            FloatingActionButton(
+                                          child: Icon(MdiIcons.waterPump),
+                                          backgroundColor:
+                                              !plant.needsWatering()
+                                                  ? Colors.green
+                                                  : Colors.red,
                                           onPressed: () {
                                             context
                                                 .bloc<PlantsBloc>()
@@ -163,9 +165,10 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                                       padding: const EdgeInsets.all(8.0),
                                       child:
                                           BlocBuilder<PlantsBloc, PlantsState>(
-                                        builder: (context, state) => IconButton(
-                                          icon: Icon(MdiIcons.seed),
-                                          color: !plant.needsFeeding()
+                                        builder: (context, state) =>
+                                            FloatingActionButton(
+                                          child: Icon(MdiIcons.seed),
+                                          backgroundColor: !plant.needsFeeding()
                                               ? Colors.green
                                               : Colors.red,
                                           onPressed: () {
@@ -194,11 +197,13 @@ class _PlantDetailsPageState extends State<PlantDetailsPage> {
                                       padding: const EdgeInsets.all(8.0),
                                       child:
                                           BlocBuilder<PlantsBloc, PlantsState>(
-                                        builder: (context, state) => IconButton(
-                                          icon: Icon(MdiIcons.pot),
-                                          color: !plant.needsRePotting()
-                                              ? Colors.green
-                                              : Colors.red,
+                                        builder: (context, state) =>
+                                            FloatingActionButton(
+                                          child: Icon(MdiIcons.pot),
+                                          backgroundColor:
+                                              !plant.needsRePotting()
+                                                  ? Colors.green
+                                                  : Colors.red,
                                           onPressed: () {
                                             context
                                                 .bloc<PlantsBloc>()
