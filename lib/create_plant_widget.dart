@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:plant_diary/bloc/model/plant.dart';
+import 'package:plant_diary/bloc/model/plant_species.dart';
 import 'package:plant_diary/bloc/plants_bloc.dart';
 import 'package:plant_diary/bloc/plants_state.dart';
 
@@ -105,10 +107,9 @@ class _CreatePlantWidgetState extends State<CreatePlantWidget> {
                                                 _searchCriteria.toLowerCase()))
                                         .toList()),
                                 builder: (BuildContext context,
-                                    AsyncSnapshot<dynamic> snapshot) {
+                                    AsyncSnapshot<List<PlantSpecies> > snapshot) {
                                   if (snapshot.hasData) {
-                                    final List<PlantSpecies> speciesList =
-                                        snapshot.data;
+                                    final speciesList = snapshot.data;
                                     return GridView.count(
                                         shrinkWrap: true,
                                         primary: true,

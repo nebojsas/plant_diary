@@ -1,6 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:plant_diary/bloc/image_bloc.dart';
+import 'package:plant_diary/bloc/model/plant.dart';
 import 'package:plant_diary/bloc/plants_bloc.dart';
 import 'package:plant_diary/bloc/plants_state.dart';
 import 'package:plant_diary/create_plant_widget.dart';
@@ -21,7 +23,10 @@ class MyApp extends StatelessWidget {
     initializeFirebaseDefault();
 
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => PlantsBloc())],
+      providers: [
+        BlocProvider(create: (_) => PlantsBloc()),
+        BlocProvider(create: (_) => ImageBloc()),
+        ],
       child: MaterialApp(
         title: 'Plant Diary', // Change for Manuela
         theme: ThemeData(
@@ -173,6 +178,7 @@ class CreatePlantFloatingActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: null,
       isExtended: true,
       onPressed: () {
         Navigator.push(

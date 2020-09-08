@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
+import 'package:plant_diary/bloc/model/plant.dart';
+import 'package:plant_diary/bloc/model/plant_species.dart';
 import 'package:plant_diary/bloc/plants_event.dart';
 import 'package:plant_diary/bloc/plants_state.dart';
 import 'package:plant_diary/repository/plants_repo.dart';

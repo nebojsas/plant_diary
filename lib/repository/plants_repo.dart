@@ -1,6 +1,13 @@
+import 'dart:async';
+import 'dart:io';
+import 'package:plant_diary/bloc/model/image.dart';
+import 'package:plant_diary/bloc/model/plant.dart';
+import 'package:plant_diary/bloc/model/plant_species.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:plant_diary/bloc/plants_state.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class PlantsRepo {
   static const USER_ID = 'cC0ZgWvF3azNLZJQcj98';
@@ -78,6 +85,24 @@ class PlantsRepo {
             plantSpeciesMap[plantDoc.data()['species'].path]));
   }
 
+  Stream<List<PlantImage>> plantImagesStream(String plantId) {
+    Firebase.initializeApp();
+    final imageCollectionPath = '/users/$USER_ID/plants/$plantId/images';
+    print('Getting stream for: $imageCollectionPath');
+    return FirebaseFirestore.instance
+        .collection(imageCollectionPath)
+        .snapshots()
+        .map((collection) {
+      print(
+          'Collection loaded, number of images: ${collection.docs?.length ?? 0}');
+      return collection.docs.map((doc) {
+        final PlantImage plantImage = PlantImage.fromData(doc.data(), doc.id);
+        print('Image url: ${plantImage.url}}');
+        return plantImage;
+      }).toList();
+    });
+  }
+
   Future<void> updatePlant(
       Map<String, dynamic> newValuesMap, String plantId) async {
     await Firebase.initializeApp();
@@ -99,10 +124,42 @@ class PlantsRepo {
         .then((docRef) => docRef != null);
   }
 
-
   Future<void> deletePlant(Plant plant) async {
     await Firebase.initializeApp();
     return FirebaseFirestore.instance
-        .collection(USER_PLANTS_PATH).doc(plant.id).delete();
+        .collection(USER_PLANTS_PATH)
+        .doc(plant.id)
+        .delete();
+  }
+
+  Future<StorageReference> uploadPhoto(
+    String path,
+    String plantId,
+    void Function(StorageTaskEvent) onData,
+  ) async {
+    final uuid = Uuid();
+    File file = File(path);
+    final StorageReference storageReference = FirebaseStorage()
+        .ref()
+        .child('/users/$USER_ID/plants/${uuid.v1().toString()}');
+    final StorageUploadTask uploadTask =
+        storageReference.putData(file.readAsBytesSync());
+
+    final StreamSubscription<StorageTaskEvent> streamSubscription =
+        uploadTask.events.listen(onData, onError: (error, stacktrace) {
+      print('Error on image upload! :$error');
+    }, onDone: () {
+      print('Done image upload!');
+    });
+    final StorageTaskSnapshot snapshot = await uploadTask.onComplete;
+    streamSubscription.cancel();
+    var reference = snapshot.ref;
+    final String imageUrl = await reference.getDownloadURL();
+    await FirebaseFirestore.instance
+        .collection('$USER_PLANTS_PATH/$plantId/images')
+        .add(Map<String, dynamic>.of({'url': imageUrl}))
+        .then((docRef) =>
+            {print('Image reference successfully added ${docRef.id}')});
+    return reference;
   }
 }

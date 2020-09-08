@@ -1,6 +1,7 @@
 // enum PlantsEvent { load, add, remove }
 
-import 'package:plant_diary/bloc/plants_state.dart';
+import 'package:plant_diary/bloc/model/plant.dart';
+import 'package:plant_diary/bloc/model/plant_species.dart';
 
 abstract class PlantsEvent {}
 

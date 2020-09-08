@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:plant_diary/bloc/model/plant.dart';
 
-import 'bloc/plants_state.dart';
 import 'plant_details_page.dart';
 
 class PlantItemTile extends StatelessWidget {
