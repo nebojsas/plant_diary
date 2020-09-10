@@ -15,20 +15,19 @@ class PlantItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(2.0),
-      child: Card(
+    return Card(
+        margin: const EdgeInsets.all(2.0),
         child: ListTile(
           leading: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: plant.imageUrl != null
+                  child: plant.profileImageUrl?.isNotEmpty != null
                       ? Image.network(
-                          plant.imageUrl,
-                          width: 48,
-                          height: 48,
+                          plant.profileImageUrl,
+                          width: 56,
+                          height: 56,
                           fit: BoxFit.cover,
                           errorBuilder: (context, object, stackTrace) =>
                               DecoratedBox(
@@ -55,14 +54,14 @@ class PlantItemTile extends StatelessWidget {
                       : plant.species.defaultImage != null
                           ? Image.network(
                               plant.species.defaultImage,
-                              width: 48,
-                              height: 48,
+                              width: 56,
+                              height: 56,
                               fit: BoxFit.cover,
                             )
                           : Image.asset(
                               'assets/default_plant.png',
-                              width: 48,
-                              height: 48,
+                              width: 56,
+                              height: 46,
                               fit: BoxFit.cover,
                             )),
             ],
@@ -92,7 +91,6 @@ class PlantItemTile extends StatelessWidget {
                         )));
           },
         ),
-      ),
     );
   }
 }

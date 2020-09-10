@@ -169,12 +169,12 @@ class PlantSliverAppBar extends StatelessWidget {
                   0.5,
                   0.9
                 ])),
-            child: plant.imageUrl != null
+            child: plant.profileImageUrl?.isNotEmpty != null
                 ? Image.network(
-                    plant.imageUrl,
+                    plant.profileImageUrl,
                     fit: BoxFit.cover,
                   )
-                : plant.species.defaultImage != null
+                : plant.species.defaultImage?.isNotEmpty != null
                     ? Image.network(
                         plant.species.defaultImage,
                         fit: BoxFit.cover,
@@ -357,11 +357,14 @@ class SliverHorizontalListPhotoGallery extends StatelessWidget {
                       margin: EdgeInsets.all(4),
                       child: Container(
                         padding: EdgeInsets.all(2),
-                        child: CachedNetworkImage(
-                          placeholder: (context, url) =>
-                              CircularProgressIndicator(),
-                          imageUrl: plantImage.url,
-                          fit: BoxFit.cover,
+                        child: Hero(
+                          tag: plantImage.id,
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            imageUrl: plantImage.url,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
@@ -370,7 +373,7 @@ class SliverHorizontalListPhotoGallery extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext context) =>
-                                  FullscreenGalleryPage(asyncSnapshot.data,
+                                  FullscreenGalleryPage(plant,
                                       initialImage: plantImage)));
                     },
                   ),

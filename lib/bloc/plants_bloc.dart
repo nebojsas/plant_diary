@@ -38,12 +38,12 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
       yield PlantsStateLoaded();
     } else if (event is AddPlantEvent) {
       bool success = await plantsRepo.postPlant(event.newPlant);
-        print('Plant addition ${success ? 'succeeded' : 'failed'}');
+      print('Plant addition ${success ? 'succeeded' : 'failed'}');
     } else if (event is AddSpeciesEvent) {
       bool success = await plantsRepo.postSpecies(event.species);
       print('Plant species addition ${success ? 'succeeded' : 'failed'}');
-      } else if (event is RemovePlantsEvent) {
-        plantsRepo.deletePlant(event.plant);
+    } else if (event is RemovePlantsEvent) {
+      plantsRepo.deletePlant(event.plant);
       // } else if (event is ReplacePlantsEvent) {
       //   final plants = (state as PlantsStateLoaded)?.plants?.toList() ?? [];
       //   yield PlantsStateLoading();
@@ -54,13 +54,17 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
       plantsRepo.updatePlant(
           Map<String, dynamic>.of({'lastTimeWatered': DateTime.now()}),
           event.plant.id);
-      } else if (event is FeedPlantEvent) {
-        plantsRepo.updatePlant(
+    } else if (event is FeedPlantEvent) {
+      plantsRepo.updatePlant(
           Map<String, dynamic>.of({'lastTimeFed': DateTime.now()}),
           event.plant.id);
-      } else if (event is RePotPlantEvent) {
-        plantsRepo.updatePlant(
+    } else if (event is RePotPlantEvent) {
+      plantsRepo.updatePlant(
           Map<String, dynamic>.of({'lastTimeRePotted': DateTime.now()}),
+          event.plant.id);
+    } else if (event is UpdateDefaultPhotoPlantEvent) {
+      plantsRepo.updatePlant(
+          Map<String, dynamic>.of({'profileImageUrl': event.imageUrl}),
           event.plant.id);
       // } else if (event is WaterAllPlantsEvent) {
       //   final plants = (state as PlantsStateLoaded)?.plants?.toList() ?? [];
@@ -100,6 +104,10 @@ class PlantsBloc extends Bloc<PlantsEvent, PlantsState> {
 
   void rePotPlant(Plant plant) {
     add((RePotPlantEvent(0, plant)));
+  }
+
+   void updatePlantProfileImage(Plant plant, String profileImageUrl) {
+    add((UpdateDefaultPhotoPlantEvent(plant, profileImageUrl)));
   }
 
   void waterAllPlants() {

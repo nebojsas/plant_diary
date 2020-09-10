@@ -53,6 +53,12 @@ class RePotPlantEvent extends PlantsEvent {
   RePotPlantEvent(this.userId, this.plant);
 }
 
+class UpdateDefaultPhotoPlantEvent extends PlantsEvent {
+  final String imageUrl;
+  final Plant plant;
+  UpdateDefaultPhotoPlantEvent(this.plant, this.imageUrl);
+}
+
 class WaterAllPlantsEvent extends PlantsEvent {
   final int userId;
   WaterAllPlantsEvent(this.userId);

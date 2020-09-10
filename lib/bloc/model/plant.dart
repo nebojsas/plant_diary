@@ -8,7 +8,7 @@ class Plant {
   DateTime lastTimeWatered;
   DateTime lastTimeRePotted;
   DateTime lastTimeFed;
-  final String imageUrl;
+  String profileImageUrl;
 
   Plant(
     this.id,
@@ -17,7 +17,7 @@ class Plant {
     this.lastTimeWatered,
     this.lastTimeFed,
     this.lastTimeRePotted,
-    this.imageUrl,
+    this.profileImageUrl,
   });
 
   bool needsWatering() => lastTimeWatered == null
@@ -44,7 +44,7 @@ class Plant {
         lastTimeWatered: data['lastTimeWatered'].toDate(),
         lastTimeFed: data['lastTimeFed'].toDate(),
         lastTimeRePotted: data['lastTimeRePotted'].toDate(),
-        imageUrl: data['imageUrl'],
+        profileImageUrl: data['profileImageUrl'],
       );
 
   Map<String, dynamic> toMap() {
@@ -53,6 +53,7 @@ class Plant {
     dataMap.putIfAbsent('lastTimeWatered', () => Timestamp.fromDate(lastTimeWatered));
     dataMap.putIfAbsent('lastTimeFed', () => Timestamp.fromDate(lastTimeFed));
     dataMap.putIfAbsent('lastTimeRePotted', () => Timestamp.fromDate(lastTimeRePotted));
+    dataMap.putIfAbsent('profileImageUrl', () => profileImageUrl);
     return dataMap;
   }
 }

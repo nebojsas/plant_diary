@@ -4,7 +4,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:plant_diary/bloc/model/plant.dart';
 import 'package:plant_diary/bloc/model/plant_species.dart';
 import 'package:plant_diary/bloc/plants_bloc.dart';
-import 'package:plant_diary/bloc/plants_state.dart';
 
 class CreatePlantWidget extends StatefulWidget {
   const CreatePlantWidget({
@@ -259,7 +258,7 @@ class _CreatePlantWidgetState extends State<CreatePlantWidget> {
                                             _careDatesMap[LAST_TIME_FED],
                                         lastTimeRePotted:
                                             _careDatesMap[LAST_TIME_REPOTTED],
-                                        imageUrl: '');
+                                        profileImageUrl: '');
                                     context
                                         .bloc<PlantsBloc>()
                                         .addPlant(createdPlant);

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:plant_diary/bloc/model/image.dart';
 import 'package:plant_diary/repository/plants_repo.dart';
 
 class ImageBloc extends Bloc<ImageEvent, ImageState> {
@@ -34,11 +35,18 @@ class ImageBloc extends Bloc<ImageEvent, ImageState> {
       final String imageUrl = await reference.getDownloadURL();
       print('DONE! file uploaded to: $imageUrl');
       // yield ImageStateUploaded(await reference.getDownloadURL());
+    } else if (event is DeleteImageEvent) {
+      final bool success = await plantsRepo.deletePhoto(event.plantId, event.plantImageId, event.plantImageFilePath) ;
+      print('Image deletion successfull: $success');
     }
   }
 
   void addImage(String imagePath, String plantId) async {
-    add((AddImageEvent(imagePath, plantId)));
+    add(AddImageEvent(imagePath, plantId));
+  }
+
+  void deletePhoto(String plantId, String imageId, String imageFilePath) {
+    add(DeleteImageEvent(plantId, imageId, imageFilePath));
   }
 }
 
@@ -48,6 +56,13 @@ class AddImageEvent extends ImageEvent {
   final String imagePath;
   final String plantId;
   AddImageEvent(this.imagePath, this.plantId);
+}
+
+class DeleteImageEvent extends ImageEvent {
+  final String plantId;
+  final String plantImageId;
+  final String plantImageFilePath;
+  DeleteImageEvent(this.plantId, this.plantImageId, this.plantImageFilePath);
 }
 
 abstract class ImageState {}

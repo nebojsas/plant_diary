@@ -96,7 +96,10 @@ class PlantsRepo {
       print(
           'Collection loaded, number of images: ${collection.docs?.length ?? 0}');
       return collection.docs.map((doc) {
-        final PlantImage plantImage = PlantImage.fromData(doc.data(), doc.id);
+        final PlantImage plantImage = PlantImage.fromData(
+          doc.data(),
+          doc.id,
+        );
         print('Image url: ${plantImage.url}}');
         return plantImage;
       }).toList();
@@ -155,11 +158,43 @@ class PlantsRepo {
     streamSubscription.cancel();
     var reference = snapshot.ref;
     final String imageUrl = await reference.getDownloadURL();
+    final String filePath = reference.path;
     await FirebaseFirestore.instance
         .collection('$USER_PLANTS_PATH/$plantId/images')
-        .add(Map<String, dynamic>.of({'url': imageUrl}))
+        .add(PlantImage.newPlantImage(imageUrl, filePath).toMap())
         .then((docRef) =>
             {print('Image reference successfully added ${docRef.id}')});
     return reference;
+  }
+
+  Future<bool> deletePhoto(
+    String plantId,
+    String plantImageId,
+    String plantImageFilePath,
+  ) async {
+    var imageReferencePath = '$USER_PLANTS_PATH/$plantId/images/$plantImageId';
+    try {
+      await FirebaseFirestore.instance
+          .doc(imageReferencePath)
+          .delete()
+          .then((value) {
+        print(
+            'Image reference removed from the plant successfully: $imageReferencePath');
+      });
+    } catch (error) {
+      print('Error on Image reference removal: $imageReferencePath');
+      print('Error: $error');
+      return false;
+    }
+    try {
+      await FirebaseStorage().ref().child(plantImageFilePath).delete();
+      print('Image deleted successfully: $plantImageFilePath');
+    } catch (error) {
+      print('Error on Image deletion: $plantImageFilePath');
+      print('Error: $error');
+      return false;
+    }
+
+    return true;
   }
 }
