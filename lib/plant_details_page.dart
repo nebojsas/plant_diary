@@ -6,7 +6,7 @@ import 'package:plant_diary/bloc/image_bloc.dart';
 import 'package:plant_diary/bloc/model/image.dart';
 import 'package:plant_diary/bloc/model/plant.dart';
 import 'package:plant_diary/fullscreen_gallery_page.dart';
-import 'package:plant_diary/main.dart';
+import 'package:plant_diary/colors.dart';
 
 import 'bloc/plants_bloc.dart';
 import 'bloc/plants_state.dart';

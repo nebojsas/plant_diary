@@ -15,7 +15,6 @@ class PlantsRepo {
   static const USER_PLANTS_PATH = '/users/$USER_ID/plants';
 
   Future<List<PlantSpecies>> plantSpeciesList() async {
-    await Firebase.initializeApp();
     return FirebaseFirestore.instance
         .collection(SPECIES_PATH)
         .get()
@@ -27,7 +26,6 @@ class PlantsRepo {
   }
 
   Future<bool> postSpecies(PlantSpecies species) async {
-    await Firebase.initializeApp();
     return FirebaseFirestore.instance
         .collection(SPECIES_PATH)
         .add(species.toMap())
@@ -35,8 +33,7 @@ class PlantsRepo {
   }
 
   Future<Map<String, PlantSpecies>> plantSpeciesMap() async {
-    await Firebase.initializeApp();
-    return FirebaseFirestore.instance
+      return FirebaseFirestore.instance
         .collection('/species')
         .get()
         .then((snapshot) {
@@ -57,8 +54,7 @@ class PlantsRepo {
   }
 
   Future<PlantSpecies> plantSpecies(String pathReference) async {
-    await Firebase.initializeApp();
-    return FirebaseFirestore.instance.doc(pathReference).get().then((doc) {
+      return FirebaseFirestore.instance.doc(pathReference).get().then((doc) {
       return Future.value(PlantSpecies.fromData(doc.data(), doc.id));
     });
   }
@@ -108,15 +104,13 @@ class PlantsRepo {
 
   Future<void> updatePlant(
       Map<String, dynamic> newValuesMap, String plantId) async {
-    await Firebase.initializeApp();
-    return FirebaseFirestore.instance
+      return FirebaseFirestore.instance
         .doc('/users/$USER_ID/plants/$plantId')
         .update(newValuesMap);
   }
 
   Future<bool> postPlant(Plant newPlant) async {
-    await Firebase.initializeApp();
-    final species =
+      final species =
         (await FirebaseFirestore.instance.collection(SPECIES_PATH).get())
             .docs
             .firstWhere((element) => element.id == newPlant.species.id);
@@ -128,8 +122,7 @@ class PlantsRepo {
   }
 
   Future<void> deletePlant(Plant plant) async {
-    await Firebase.initializeApp();
-    return FirebaseFirestore.instance
+      return FirebaseFirestore.instance
         .collection(USER_PLANTS_PATH)
         .doc(plant.id)
         .delete();

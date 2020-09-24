@@ -40,6 +40,7 @@ class PlantItemTile extends StatelessWidget {
                               'https://example.does.not.exist/image.jpg',
                               errorBuilder: (BuildContext context,
                                   Object exception, StackTrace stackTrace) {
+                                    print(exception);
                                 // Appropriate logging or analytics, e.g.
                                 // myAnalytics.recordError(
                                 //   'An error occurred loading "https://example.does.not.exist/image.jpg"',

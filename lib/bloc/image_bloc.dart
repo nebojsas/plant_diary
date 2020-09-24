@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:plant_diary/bloc/model/image.dart';
 import 'package:plant_diary/repository/plants_repo.dart';
 
 class ImageBloc extends Bloc<ImageEvent, ImageState> {
