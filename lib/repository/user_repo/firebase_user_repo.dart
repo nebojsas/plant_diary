@@ -8,9 +8,9 @@ class FirestoreUserRepo extends UserRepo {
     User firestoreUser = FirebaseAuth.instance.currentUser;
     if (firestoreUser == null) return null;
     return PlantDiary.User(
-      firestoreUser.uid,
-      firestoreUser.displayName,
-      firestoreUser.email,
+      userId: firestoreUser.uid,
+      name : firestoreUser.displayName,
+      email: firestoreUser.email,
     );
   }
 
@@ -24,9 +24,9 @@ class FirestoreUserRepo extends UserRepo {
     User firestoreUser = credential.user;
     if (firestoreUser == null) throw Error();
     return PlantDiary.User(
-      firestoreUser.uid,
-      firestoreUser.displayName,
-      firestoreUser.email,
+      userId: firestoreUser.uid,
+      name: firestoreUser.displayName,
+      email: firestoreUser.email,
     );
   }
 }

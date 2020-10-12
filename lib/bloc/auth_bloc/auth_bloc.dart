@@ -12,21 +12,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
     if (event is CheckAuthEvent) {
-      yield LoadingAuthState();
+      yield AuthState.loading();
       // perform login
       User user = await _userRepo.getUser();
       if (user != null) {
-        yield AuthenticatedState(user.userId);
+        yield AuthState.authenticated(user.userId);
       } else {
-        yield UnAuthenticatedState();
+        yield AuthState.unauthenticated();
       }
     } else if (event is LogInEvent) {
       yield* mapLogInEventToState(event);
     } else if (event is LogOutEvent) {
-      yield LoadingAuthState();
+      yield AuthState.loading();
       // perform logut
       await _userRepo.signOut();
-      yield UnAuthenticatedState();
+      yield AuthState.unauthenticated();
     }
   }
 
@@ -36,23 +36,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   /// or if the user is aleary authenticated and valid
   /// On error AuthErrorState is emited.
   Stream<AuthState> mapLogInEventToState(LogInEvent event) async* {
-    yield LoadingAuthState();
+    yield AuthState.loading();
     // perform login
     User user = await _userRepo.getUser();
     if (user != null) {
-      yield AuthenticatedState(user.userId);
+      yield AuthState.authenticated(user.userId);
     } else {
       if (event.email?.isEmpty == null || event.password?.isEmpty == null) {
         await Future.delayed(Duration(milliseconds: 300));
         print('username or password is missing');
-        yield AuthErrorState('Username or password missing.');
+        yield AuthState.error('Username or password missing.');
       } else {
         print('username and password are present');
         try {
           User user = await _userRepo.login(event.email, event.password);
-          yield AuthenticatedState(user.userId);
+          yield AuthState.authenticated(user.userId);
         } catch (error) {
-          yield AuthErrorState(error.toString());
+          yield AuthState.error(error?.toString() ?? '');
         }
       }
     }

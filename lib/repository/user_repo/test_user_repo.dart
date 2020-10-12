@@ -3,11 +3,12 @@ import 'package:plant_diary/repository/user_repo.dart';
 
 class TestUserRepo extends UserRepo {
   final User _user;
+  final bool _alreadyAuthenticated = false;
   final String _password;
 
   TestUserRepo(this._user, this._password);
   @override
-  Future<User> getUser() => Future.value(_user);
+  Future<User> getUser() => Future.value(_alreadyAuthenticated ? _user : null);
 
   @override
   Future<void> signOut() => Future.delayed(Duration(milliseconds: 300));
