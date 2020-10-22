@@ -35,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         child: TextField(
+                            key: Key('EMAIL'),
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'e-mail',
@@ -54,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         child: TextField(
+                            key: Key('PASSWORD'),
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'password',
@@ -75,20 +77,24 @@ class _LoginPageState extends State<LoginPage> {
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: FlatButton.icon(
+                                key: Key('LOGIN'),
                                 color: Colors.green,
                                 padding: EdgeInsets.all(16),
-                                onPressed: () {
-                                  context
-                                      .bloc<AuthBloc>()
-                                      .login(_email, _password);
-                                },
+                                onPressed: _email?.isNotEmpty != null &&
+                                        _password?.isNotEmpty != null
+                                    ? () {
+                                        context
+                                            .bloc<AuthBloc>()
+                                            .login(_email, _password);
+                                      }
+                                    : null,
                                 icon: Icon(MdiIcons.login),
                                 label: Text('LOG IN'),
                                 textColor: Colors.white))),
                     Visibility(
                         visible: errorMessage?.isNotEmpty != null,
                         child: Container(
-                          padding: EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16),
                             child: Text(errorMessage ?? '',
                                 style: TextStyle(color: Colors.red))))
                   ],
